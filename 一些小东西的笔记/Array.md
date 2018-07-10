@@ -53,3 +53,14 @@ var newarr = array.map((currentvalue , index , array)=>{
 `thisArg` : 可选的，指定callback的 this 值
 
 [MDN map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
+
+### 3.交换两个值
+
+```javascript
+var a = 'a';
+var b = 'b';
+[a,b] = [b,a]
+console.log(a) // 'b'
+console.log(b) // 'a'
+```
+
