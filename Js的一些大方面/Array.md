@@ -1,4 +1,4 @@
-## Array
+##1.Array
 
 #### 1.join
 
@@ -159,4 +159,40 @@ var a  = [1,2,3,4]
 a.reduce( (result,currentValue,currentIndex,array)=>{ return result + currentValue } , 0 ) 
 //累加 10
 ```
+
+####8.总结
+
+*关于 map , filter , reduce之间的关系*
+
+**用reduce实现map**
+
+```javascript
+var array = [1,2,3];
+array.map((item)=>{return item+1});
+array.reduce((result,item)=>{
+	result.push(item+1)
+    return result ; 
+},[])//result的初始值设置为 []
+```
+
+**用reduce实现filter**
+
+```javascript
+var array = [1,2,3,4]
+array.filter((item)=>{return item%2 === 0});
+array.reduce((result,item)=>{
+  if(item%2 === 0){
+    result.push(item)
+  }
+  return result
+},[])
+```
+
+**结论，其实foreach,map,filter都是由reduce实现，reduce是最关键的。**
+
+## 2.underscore.js
+
+#### 1.underscore是什么
+
+underscore是一个集合操作的库(数组和对象)
 
