@@ -1,6 +1,6 @@
 ### tabs轮子制作
 
-#### 1.先实现一下
+#### 1.先简单实现一下
 
 ```html
 <div id='app'></div>
@@ -94,7 +94,7 @@ var vm = new Vue({
   })
   ```
 
-  现在有个问题，我怎么知道要选中那个tab呢?用1，2不大好，所以，改为字符串,并且给下面加上name
+  现在有个问题，我怎么知道要选中那个tab呢?用1，2不大好，所以，改为字符串,并且给下面加上`name`
 
   ```javascript
   Vue.component('tabs',{
@@ -143,7 +143,7 @@ var vm = new Vue({
           }
       },
       template: `
-      <tabs selectedTab = 'tab1'>
+      <tabs :selectedTab = 'tab1'>
           <tabs-navs>
               <tabs-navs-item name = 'tab1' >1</tabs-navs-item>
               <tabs-navs-item name = 'tab2' >2</tabs-navs-item>
@@ -165,7 +165,9 @@ var vm = new Vue({
 
   问题又来了，爸爸怎么从爷爷那里获得呢？
 
-  P.S 爷爷：tabs ， 爸爸 ： tabs-navs , 孙子: tabs-navs-item
+  **孙子，爸爸自己定义一个属性`selectedTab`，再写一个`methods: SelectedTab(tab)`，爷爷遍历所有的爸爸，然后调用爸爸的`SelectedTab(tab)`把爷爷的`selectedTab`传给爸爸的`selectedTab`，同理，爸爸再用同样的方式传给孙子。**
+
+  P.S 爷爷：`tabs` ， 爸爸 ： `tabs-navs` , 孙子: `tabs-navs-item`
 
   ```javascript
   Vue.component('tabs', {
@@ -177,9 +179,9 @@ var vm = new Vue({
       `,
       mounted() {
           this.$children.forEach((vm) => { //遍历所有的孩子
-              if (vm.$options.name === 'tabs-navs') {
+              if (vm.$options.name === 'tabs-navs') { //如果是爸爸
                   console.log('爷爷的selectedTab是'+this.selectedTab)
-                  vm.SelectedTab(this.selectedTab) //通过儿子的selectedTab方法，传给儿子
+                  vm.SelectedTab(this.selectedTab) //通过爸爸的selectedTab方法，传给儿子
               }else if(vm.$options.name === 'tabs-panels'){
                   vm.SelectedTab(this.selectedTab)
               }
@@ -217,13 +219,13 @@ var vm = new Vue({
           }
       },
       template: `
-      <div class='tabs-navs-item' :class = '{active}'>
+      <div class='tabs-navs-item' :class = '{active}'>   //通过计算属性，判断active
           <slot/>
       </div>
       `,
       computed: {
           active() {
-              return this.selectedTab === this.name
+              return this.selectedTab === this.name  //通过计算属性，判断active
           }
       },
       methods:{
@@ -286,7 +288,7 @@ var vm = new Vue({
           }
       },
       template: `
-      <tabs selectedTab = 'tab1'>
+      <tabs :selectedTab = 'tab1'>
           <tabs-navs>
               <tabs-navs-item name = 'tab1' >1</tabs-navs-item>
               <tabs-navs-item name = 'tab2' >2</tabs-navs-item>
@@ -300,16 +302,18 @@ var vm = new Vue({
   })
   ```
 
-  这样，`selectedTab`  整个传递的线路，我们就打通了。tabs-panels的方法同理
+  这样，`selectedTab`  整个传递的线路，我们就打通了。`tabs-panels`的方法同理
 
-- 下面，我点击`tabs-navs-item`的时候，需要`selectedTab = this.name`，孙子必须告诉爷爷`$emit`，但是爷爷没法直接知道，先告诉爸爸，爸爸再告诉爷爷。
+- 下面也是重点，我点击`tabs-navs-item`的时候，孙子要告诉爷爷该切换了，但孙子不能直接告诉爷爷，先告诉爸爸，爸爸再告诉爷爷。
 
-  **注意：Vue没有冒泡，孙子触发的$emit事件，爸爸是不知道的，所以要用爸爸监听$on孙子，爷爷监听$on爸爸，然后爷	 爷再把数据传出去update()**
+  **注意：Vue没有冒泡，孙子触发的$emit事件，爸爸是不知道的，所以要用爸爸监听$on孙子，爷爷监听$on爸爸，然后爷	爷再把数据传出去update()**
 
   ```javascript
   //孙子
   onClick(){
-      this.$emit('update:selectedTab', this.name) //孙子传出去
+      this.$emit('update:selectedTab', this.name) 
+      //孙子传出去。
+      //name = 'tab1'的作用在这里体现，之前的vm.$options.name其实是 component 的 name
   }
   //爸爸
   mounted() {
