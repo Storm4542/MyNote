@@ -126,3 +126,32 @@ jack发现他还是登录状态，非常高兴 : ) ----- end
 **区分用户**
 
 frank 这时候也登录 a.com 这时候他获得的 响应头就是`'Set-Cookie','login = frank'`了，这样我们也能区分jack 和 frank 了
+
+但是`Cookie`有一个很不安全的地方，任何一个前端都可以使用`document.cookie = xxx  `来伪造。
+
+
+
+**我们需要一个方法既需要能标识用户，又可以防止前端伪造**
+
+#### 2.Session
+
+因为`Cookie`不安全，所以出现了`Session`。
+
+`Session`是存在数据库的，因此前端无法修改。
+
+**流程**
+
+用户输入账户密码登录 ——>  发送请求 ———> 服务器验证账户密码正确———> 
+
+**分配一个`session`，通过`cookie`告诉浏览器**———>`Set-Cookie,sessionId = 'xxxxxxxxxxxxx'`
+
+剩下的就是和`Cookie`一样了。
+
+
+
+#### 3.两者不同
+
+1. 使用时间：用Cookie分辨两个不同的用户，用Session存放用户的敏感数据。
+2. 实现方式：Cookie使用Set-Cookie实现，Session你想怎么实现就怎么实现。
+3. 存放方式：Cookie存放在浏览器里，Session存在服务器端的文件，数据库，内存等等。
+4. 两者关系：Session一般基于Cookie，存在里面。但也可以放到 localStorage 里面，放到 URL 里等等
