@@ -18,11 +18,11 @@
 
 - 因此，Vue的 v-model 变成了两个单项绑定组成的双向绑定，把 v-model 拆分可以变成这样
 
-	参考代码]: http://jsbin.com/gapoquq/4/edit?html,js,output	"1"
+  参考代码]: http://jsbin.com/gapoquq/4/edit?html,js,output	"1"
 
 - 现在我加一个子组件child ，有一个属性 selected ，通过 button 切换值
 
-	参考代码]: http://jsbin.com/hecaled/1/edit?html,js,output	"2"
+  参考代码]: http://jsbin.com/hecaled/1/edit?html,js,output	"2"
 
 - 这样能改，但是会报出警告，告诉你别在子组件里自己改，你要通过父亲修改（上面的假设）
 
@@ -48,6 +48,34 @@
 
   但是双向绑定很爽，于是作者给了我们一个语法糖  .sync语法糖
 
-	参考代码]: http://jsbin.com/haqati/3/edit?js,output	"4"
+  参考代码]: http://jsbin.com/haqati/3/edit?js,output	"4"
 
-	原理写在下面注释里了，其实还是 监听了 @updata:selected 方法
+  原理写在下面注释里了，其实还是 监听了 @updata:selected 方法
+
+### 2.created()和mounted() 父子传参
+
+```javascript
+var div = document.createElement('div') //这是created ,将div写入内存
+document.body.appendChild(div) //这是mounted ,将div挂到页面里
+```
+
+**问题来了,如果div里有子元素,那么是什么顺序呢?**
+
+```javascript
+var div = document.createElement('div') // div created
+var chilid = document.createElement('div') // child created
+document.body.appendChild(chilid) // child mounted
+document.body.appendChild(div) // div mouted
+```
+
+所以我们可以看到顺序是
+
+**创建父亲 ----> 创建儿子 ---> mounted儿子 --->mounted 父亲**
+
+因此,得到在父子组件传参的时候,父亲的mouted()里面,一定能拿到所有儿子:`this.$children`
+
+### 3.data和computed
+
+当一个属性需要跟随另一个属性变化的时候使用 `computed`
+
+data里的属性不会跟随其他属性变化
