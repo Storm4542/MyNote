@@ -1,4 +1,4 @@
-## Vue的一些思考
+## 写轱辘时候发现的新知识
 
 ### 1.Vue的双向绑定其实是单向绑定
 
@@ -79,3 +79,104 @@ document.body.appendChild(div) // div mouted
 当一个属性需要跟随另一个属性变化的时候使用 `computed`
 
 data里的属性不会跟随其他属性变化
+
+### 4.Vue开发插件
+
+在写Toast组件的时候使用到了这个方法。
+
+Vue.js的插件应当有一个公开方法`install`,第一个参数是`vue`,第二个参数是可选的选项对象`options`
+
+```javascript
+//Plugin.js
+MyPlugin.install = function (Vue, options) {
+  // 1. 添加全局方法或属性
+  Vue.myGlobalMethod = function () {
+    // 逻辑...
+  }
+
+  // 2. 添加全局资源
+  Vue.directive('my-directive', {
+    bind (el, binding, vnode, oldVnode) {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 3. 注入组件
+  Vue.mixin({
+    created: function () {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 4. 添加实例方法
+  Vue.prototype.$myMethod = function (methodOptions) {
+    // 逻辑...
+  }
+}
+```
+
+然后在 app.js 里注册
+
+```javascript
+import Vue from 'vue'
+import Plugin from './plugin'
+Vue.use(Plugin，{someOptions:true})
+```
+
+然后就可以使用了
+
+### 5.Element.getBoundingClientRect()
+
+返回Element的大小以及相对与视口的位置。
+
+在使用`vm.$el.style.height`获取不到高度等属性的时候可以尝试使用它
+
+[文档](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getBoundingClientRect)
+
+### 6.ref
+
+在Toast里使用了ref。
+
+在普通的DOM 元素上使用，引用指向的就是 DOM 元素
+
+```html
+<template> 
+	<div>
+      <p ref='test'>
+        123
+      </p>
+  	</div>  
+</template>
+```
+
+```javascript
+//获取	
+this.$refs.test // <p>123</p> 获取node元素
+```
+
+[文档](https://cn.vuejs.org/v2/api/#ref)
+
+如果用在子组件上，引用就指向组件实例：
+
+```html
+<child ref='child'></child>
+```
+
+### 7.vm.$slots
+
+```html
+<div slot = 'header'>
+  header
+</div>
+```
+
+```javascript
+vm.$slot.header//header
+```
+
+[文档](https://cn.vuejs.org/v2/api/#vm-slots)
+
+### 8.CSS transform
+
