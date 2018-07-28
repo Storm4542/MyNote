@@ -256,3 +256,215 @@ export default {
 
 > 更改 Vuex 的 store 中的状态的**唯一方法**是提交 mutation。Vuex 中的 mutation 非常类似于事件：每个 mutation 都有一个字符串的 **事件类型 (type)** 和 一个 **回调函数 (handler)**。这个回调函数就是我们实际进行状态更改的地方，并且它会接受 state 作为第一个参数
 
+**注意: Mutation必须是同步函数，目的是让 vue的devtool里方便捕捉**
+
+简单的来说，这就相当于Vue实例中的methods,修改东西，就要靠他commit.
+
+我现在想要加一个给每个书籍增加数量的功能，就要使用mutations了。
+
+在index.js里的mutations对象里写好逻辑，通过书名增加数量。
+
+```javascript
+//index.js
+const mutations = {
+    addBookNum(state,books){  //books = {name:'xxx',addNum:xx}
+        let thebook = state.BookList.filter(book=>book.name === books.name);
+        thebook[0].number+= books.addNum
+    }
+}
+```
+
+然后在book.vue里提交，注意，mutations的方法写在methods里
+
+```vue
+<template>
+    <div>
+        <h3>所有的书</h3>
+        <p v-for="item of BookList" :key="item.id">
+            {{item.name}}, 还有 {{item.number}}本
+            <button @click="addBook({name:item.name,addNum:1})">增加1本书</button>
+        </p>
+        <h3>现在可以借走的书</h3>
+        <p v-for="item of findBook" :key="item.id">
+            {{item.name}} , 还有 {{item.number}}本
+        </p>
+    </div>
+</template>
+
+<script>
+    import store from "../store/index";
+    import {mapState,mapGetters} from 'vuex'
+    export default {
+        name:'book',
+        computed:{
+            ...mapState(['BookList']),
+            findBook(){
+                return this.$store.getters.findBook(true)
+            },
+            ...mapGetters(['booksCount'])
+        },
+        methods:{
+            addBook(options){
+                this.$store.commit('addBookNum', options)  //{name:'莎士比亚',addNum:200}
+            }
+        }
+    }
+</script>
+```
+
+这样，每一个后面就都加上了一个按钮，并且可以增加书籍的数量。
+
+Vue的作者建议，使用常量代替Mutaions事件类型。具体使用看文档，这里就不写了。
+
+**在组件提交的方式**
+
+1. `this.$store.commit( 'fn' , playload)`
+
+2. 如果不需要传参数可以使用 `mapMutations`
+
+   ```javascript
+   methods:{
+       ...mapMutations([
+           'addBook', //把this.addBook()映射为 this.$store.commit('addBook')
+           'removeBook'
+       ]),
+        ...mapMutations({
+               add:'addBook' // 把 this.add() 映射为 this.$store.commit('addBook')
+           })
+          
+   }
+   ```
+
+   
+
+#### 6.Action
+
+刚才说了 Mutation 只能为同步函数，那么处理异步的时候就需要 Action了。
+
+- Action 提交的是 mutation , 而不是更改 state
+- Action 可以包含任何异步操作
+
+Action接收一个`context`参数，里面包含`commit state getters`。
+
+在actions里面异步提交 `addBookNum`
+
+```javascript
+const actions = {
+    addBookNumAsync({commit},options){
+        setTimeout(()=>{
+            commit('addBookNum',options)
+        },3000)
+    }
+```
+
+在book.vue里通过dispatch触发。
+
+```javascript
+ methods:{
+            addBook(options){
+                this.$store.commit('addBookNum', options)  //{name:'莎士比亚',addNum:200}
+            },
+            addBookAsync(options){
+                console.log(options);
+                this.$store.dispatch('addBookNumAsync',options)
+            }
+        }
+```
+
+上面是最简单的异步处理，
+
+> Action 通常是异步的，那么如何知道 action 什么时候结束呢？更重要的是，我们如何才能组合多个 action，以处理更加复杂的异步流程？
+>
+> 首先，你需要明白 `store.dispatch` 可以处理被触发的 action 的处理函数返回的 Promise，并且 `store.dispatch` 仍旧返回 Promise
+
+模拟一下更新书籍的操作
+
+```javascript
+addNewBookAsync({commit}){
+        return new Promise((resolve,reject)=>{
+            setTimeout(()=>{
+                let newBook = [{id:66,name:'水浒', number:12,ishave:true}]
+                commit('addNewBook',newBook)
+                resolve()
+            },3000)
+        })
+    }
+```
+
+在book.vue里
+
+```javascript
+ addNewBook(){
+                this.$store.dispatch('addNewBookAsync').then(()=>{
+                    alert('更新成功')
+                })
+            }
+```
+
+在另外一个actions中也可以
+
+```javascript
+actions: {
+  // ...
+  actionB ({ dispatch, commit }) {
+    return dispatch('actionA').then(() => {
+      commit('someOtherMutation')
+    })
+  }
+}
+```
+
+也可以使用 async/await
+
+```javascript
+// 假设 getData() 和 getOtherData() 返回的是 Promise
+
+actions: {
+  async actionA ({ commit }) {
+    commit('gotData', await getData())
+  },
+  async actionB ({ dispatch, commit }) {
+    await dispatch('actionA') // 等待 actionA 完成
+    commit('gotOtherData', await getOtherData())
+  }
+}
+```
+
+一个 `store.dispatch` 在不同模块中可以触发多个 action 函数。在这种情况下，只有当所有触发函数完成后，返回的 Promise 才会执行。
+
+#### 7.Module
+
+由于使用单一状态树，应用的所有状态会集中到一个比较大的对象。当应用变得非常复杂时，store 对象就有可能变得相当臃肿。
+
+为了解决以上问题，Vuex 允许我们将 store 分割成**模块（module）**。每个模块拥有自己的 state、mutation、action、getter、甚至是嵌套子模块——从上至下进行同样方式的分割：
+
+```javascript
+const moduleA = {
+  state: { ... },
+  mutations: { ... },
+  actions: { ... },
+  getters: { ... }
+}
+
+const moduleB = {
+  state: { ... },
+  mutations: { ... },
+  actions: { ... }
+}
+
+const store = new Vuex.Store({
+  modules: {
+    a: moduleA,
+    b: moduleB
+  }
+})
+
+store.state.a // -> moduleA 的状态
+store.state.b // -> moduleB 的状态
+```
+
+#### 7.总结
+
+使用vuex的流程是这样的
+
+action调用=>mutation修改=>state(发生改变的时候)=>getter
