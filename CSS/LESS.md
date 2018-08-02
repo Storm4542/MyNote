@@ -21,8 +21,8 @@ div{border:1px solid @border-color}
 
 ```less
 .classA (@radius:5px){border-radius:@radius}
-.classB {.parent}
-.classC {.parent(10px)}
+.classB {.classA}
+.classC {.classA(10px)}
 ```
 
 @arguments变量 像写函数一样写CSS , 理解为JS里的 arguments 即可
