@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>移动页面 demo </title>
+    <!-- <link rel="stylesheet" href="./style.css"> -->
+    <style>
+        *{margin: 0;padding: 0}
+        li{list-style: none}
+        a{text-decoration: none;color: inherit}
+        .logo{
+            width: 50px;
+            height: 50px;
+            background: #ddd;
+            border-radius: 400px;
+        }
+        .clearfix{
+            display: block;
+            content: '';
+            clear: both;
+        }
+        .nav{
+            display: none
+        }
+        .nav > li{
+            float: left
+        }
+        .nav.active{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo"></div>
+        <button id="btn">菜单</button>
+        <ul id="nav" class="nav clearfix" >
+            <li><a href="#">导航 </a></li>
+            <li><a href="#">导航 </a></li>
+            <li><a href="#">导航 </a></li>
+            <li><a href="#">导航 </a></li>
+            <li><a href="#">导航 </a></li>
+        </ul> 
+    </header>
+</body>
+<script>
+    btn.onclick = function(){
+       nav.classList.toggle('active')
+    }
+</script>
+</html>

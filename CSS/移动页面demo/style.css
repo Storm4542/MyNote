@@ -1,0 +1,30 @@
+/* wdith>=320px */
+@media (min-width : 320px){
+    body{
+        background: red
+    }
+}
+/* wdith>=375px */
+@media (min-width : 375px){
+    body{
+        background: orange
+    }
+}
+/* wdith>=425px */
+@media (min-width : 425px){
+    body{
+        background: yellow
+    }
+}
+/* wdith>=768px */
+@media (min-width : 768px){
+    body{
+        background: green
+    }
+}
+/* wdith>=769px */
+@media (min-width : 769px){
+    body{
+        background: blue
+    }
+}
