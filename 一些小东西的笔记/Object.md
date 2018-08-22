@@ -14,3 +14,16 @@ var newobj = Object.assign(obj1,obj2) //newobj:{a:2,b:3} 属性被后续参数�
 
 ```
 
+### 2.链式调用的语法糖
+
+```javascript
+const res = {
+    data:{
+        name:'zty'
+    }
+}
+const {data:{name:name}} = response // 'zty'
+//等价于
+const name = response.data.name
+```
+
