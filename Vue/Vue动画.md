@@ -56,7 +56,7 @@ new Vue({
 
 实现了一个类似轮播感觉的动画。
 
-使用 animation
+##### # 使用 animation
 
 ```css
 .test {
