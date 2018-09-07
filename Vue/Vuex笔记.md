@@ -116,7 +116,7 @@ export default {
 </script>
 ```
 
-加入你的`computed`中的属性和`state`中的名字相同，那就而可以更方便了。
+假如你的`computed`中的属性和`state`中的名字相同，那就而可以更方便了。
 
 ```vue
  <template>
@@ -136,7 +136,7 @@ export default {
         ...mapState(['BookList'])
     }
 }
-</script>xxxxxxxxxx <script>import store from "../../store/index";import {mapState} from 'vuex'export default {    name:'book',    computed:mapState({        booklist:state=>state.BookList    })}</script>
+</script>
 ```
 
 ... ：对象展开运算符 --- ES6的新语法
@@ -269,6 +269,7 @@ export default {
 const mutations = {
     addBookNum(state,books){  //books = {name:'xxx',addNum:xx}
         let thebook = state.BookList.filter(book=>book.name === books.name);
+        //注意 ： filter返回一个数组
         thebook[0].number+= books.addNum
     }
 }
@@ -335,7 +336,6 @@ Vue的作者建议，使用常量代替Mutaions事件类型。具体使用看文
    }
    ```
 
-   
 
 #### 6.Action
 
