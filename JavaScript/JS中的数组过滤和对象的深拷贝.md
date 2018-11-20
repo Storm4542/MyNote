@@ -104,13 +104,15 @@ let obj = {
 console.log(Object.keys(obj));//[ 'a', 'b', 'c' ]
 ```
 
-#### 7. 数组的深拷贝
+#### 7. 对象的深拷贝
 
 ```javascript
-let newRes = Json.parse(Json.stringify(res)); //数据量不大的时候使用
+let newRes = Json.parse(Json.stringify(res)); 
+//数据量不大的时候使用，而且必须遵循JSON格式,假如有 function 就无法拷贝
 
-//递归深拷贝 o1:得到的新数组 , o2:原数组
-let newRes = [] ;
+//递归深拷贝 o1:得到的新对象 , o2:原对象
+let newRes = {} ; //想得到数组
+let newRes = [] ; //想得到对象
 function deepClone(o1, o2) {
     for (let k in o2) {
         if (typeof o2[k] === 'object') {
