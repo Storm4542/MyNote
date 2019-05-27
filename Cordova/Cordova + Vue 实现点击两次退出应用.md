@@ -3,7 +3,8 @@
 #### 注册事件
 
 ```javascript
-//注意在 deviceready 后使用,写在
+//注意在 deviceready 后使用,写在methods中
+//点击返回按键
   onBackKeyDown() {
        this.$toast('再点击一次退出应用');
        document.removeEventListener("backbutton", this.onBackKeyDown, false); // 注销返回键
@@ -12,8 +13,11 @@
              document.addEventListener("backbutton", this.onBackKeyDown, false);
              document.removeEventListener("backbutton", this.exitApp, false);
            }, 3000)
-
         }
+//关闭APP
+ exitApp() {
+         navigator.app.exitApp();
+        },
 ```
 
 #### 启动事件
